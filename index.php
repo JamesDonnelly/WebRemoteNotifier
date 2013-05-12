@@ -33,7 +33,7 @@
             <div id="innerWrapper">
                 <div id="main">
                     <section>
-                        <h1>
+                        <h1 id="title">
                             Authentication
                             <small>| Remote Notifier</small>
                         </h1>
@@ -87,7 +87,7 @@
                             </table>
                         </div>
                         <code id="log" style="display:none"></code>
-                        <p id="connectionMessage" class="statusOk">Status: <span>OK!</span></p>
+                        <p id="connectionMessage" class="statusNeutral">Status: <span>Not connected</span></p>
                     </section>
                 </div>
             </div>

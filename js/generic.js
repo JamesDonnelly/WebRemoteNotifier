@@ -1,13 +1,16 @@
 $(document).ready(function() {
-    $('div.progress > div').css({
-        width:$('div#inner').outerWidth(),
-        height:$('div#inner').outerHeight()
-    })
-
     var
-        app_key = 'baa7ee7cee05c74a69af',
-        channel = 'private-matt_sandbox'
+        $auth_deviceTag = $('#txtDeviceTag'),
+        $auth_appKey = $('#txtAppKey'),
+        $log = $('#log'),
+        $deviceList = $('#devices'),
+        $innerDiv = $('div#inner')
     ;
+
+    $('div.progress > div').css({
+        width:$innerDiv.outerWidth(),
+        height:$innerDiv.outerHeight()
+    });
 
     Pusher.channel_auth_endpoint = 'http://jamesmdonnelly.com/WebRemoteNotifier/connector.php';
     Pusher.channel_auth_transport = 'ajax';
@@ -17,13 +20,13 @@ $(document).ready(function() {
         var time = '[' + ("0" + date.getHours()).slice(-2) + ":"
                     + ("0" + date.getMinutes()).slice(-2) + ":"
                     + ("0" + date.getSeconds()).slice(-2) + ']';
-        if(!$('#log').is(':visible'))
-            $('#log').slideDown(500);
-        $('#log').html('<span>' + time + '</span>' + msg + '<br>' + $('#log').html());
+        if(!$log.is(':visible'))
+            $log.slideDown(500);
+        $log.html('<span>' + time + '</span>' + msg + '<br>' + $log.html());
         if(window.console && window.console.log) {
             window.console.log(time + ' ' + msg);
         }
-    }
+    };
 
     $('div#inner > form').on('click', 'input[type="submit"]', function(e) {
         e.preventDefault();
@@ -32,7 +35,7 @@ $(document).ready(function() {
 
         $('form#connectionForm > *').prop('disabled', true);
         $('p#connectionMessage > span').text('Connecting...');
-        $('p#connectionMessage').removeClass('statusOk');
+        $('p#connectionMessage').removeClass('statusNeutral');
 
         var pusher = new Pusher($('#txtAppKey').val());
 
@@ -54,7 +57,7 @@ $(document).ready(function() {
             privateChannel.bind('register_device', function(data) {
                 console.log(data);
 
-                if(!$('#devices').is(':visible'))
+                if(!$deviceList.is(':visible'))
                 {
                     $('#devicesLoadingMessage').slideUp(500);
                     $('#devices').slideDown(500);
@@ -73,16 +76,20 @@ $(document).ready(function() {
                 row.append(tag);
                 row.append(type);
 
-                $('#devices > tbody').append(row);
+                $deviceList.children('tbody').append(row);
             });
 
             privateChannel.trigger('client-controller_authentication', {
-                    'authDeviceTag': $('#txtDeviceTag').val(),
-                    'authAppKey': $('#txtAppKey').val()
+                    'authDeviceTag': $auth_deviceTag.val(),
+                    'authAppKey': $auth_appKey.val()
                 }
             );
 
-            privateChannel.trigger('client-device_poll_new', { 'requestedDevice': 'all', 'requestedDeviceTag': $('#txtDeviceTag').val(), 'senderType': 'controller'});
+            privateChannel.trigger('client-device_poll_new', {
+                'requestedDevice': 'all',
+                'requestedDeviceTag': $auth_deviceTag.val(),
+                'senderType': 'controller'
+            });
         });
     })
-})
+});
