@@ -38,11 +38,6 @@
                             <small>| Remote Notifier</small>
                         </h1>
                         <div id="inner">
-                            <div class="progress" style="display:none">
-                                <div>
-                                    <img src="img/spinner.gif" alt="" />
-                                </div>
-                            </div>
                             <form method="post" id="connectionForm">
                                 <fieldset>
                                     <label for="txtAppKey">
@@ -70,23 +65,6 @@
                                 </fieldset>
                             </form>
                         </div>
-                        <div id="devicesArea" style="display:none">
-                            <h3>Devices</h3>
-                            <p id="devicesLoadingMessage">Loading...</p>
-                            <table id="devices" style="display:none">
-                                <thead>
-                                    <tr>
-                                        <th>Device Name</th>
-                                        <th>Device Tag</th>
-                                        <th>Device Type</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
-                        </div>
-                        <code id="log" style="display:none"></code>
                         <p id="connectionMessage" class="statusNeutral">Status: <span>Not connected</span></p>
                     </section>
                 </div>

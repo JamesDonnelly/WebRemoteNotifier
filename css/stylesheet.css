@@ -184,13 +184,9 @@ p#connectionMessage {
     box-sizing:border-box;
 }
 
-p#connectionMessage.statusNeutral {
-    background:#eee;
-}
-
-p#connectionMessage.statusOk {
-    background:#aea;
-}
+p#connectionMessage.statusNeutral { background:#eee; }
+p#connectionMessage.statusBusy { background:#5ae; color:#fff; }
+p#connectionMessage.statusOk { background:#aea; }
 
 table#devices {
     border-collapse:collapse;

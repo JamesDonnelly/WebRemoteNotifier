@@ -1,95 +1,80 @@
+/* Define the Pusher endpoint and transport method.
+ * ----
+ * The endpoint here is our connector.php class - this is where Pusher will respond to
+ * our requests - we're then telling Pusher to use AJAX as the data transport method.
+ */
+Pusher.channel_auth_endpoint = 'http://jamesmdonnelly.com/WebRemoteNotifier/connector.php';
+Pusher.channel_auth_transport = 'ajax';
+
+/* Pre-defined custom element functions.
+ */
+$(function() {
+    /* Update connection status message.
+     * ----
+     * This is intended to be used solely on the connection message element.
+     */
+    $.fn.updateStatus = function(type, message) {
+        var $status = $(this);
+        // Remove any current class, then add the new class and change the status message
+        $status.removeClass().addClass('status' + type).children('span').text(message);
+    };
+});
+
 $(document).ready(function() {
+    /* Declare scope variables.
+     * ----
+     * Element references here are used to avoid repetition.
+     */
     var
-        $auth_deviceTag = $('#txtDeviceTag'),
+        // Authentication elements
         $auth_appKey = $('#txtAppKey'),
-        $log = $('#log'),
-        $deviceList = $('#devices'),
-        $innerDiv = $('div#inner')
+        $auth_deviceTag = $('#txtDeviceTag'),
+        $auth_form = $('#connectionForm'),
+
+        // Connection status message
+        $status = $('p#connectionMessage')
     ;
 
-    $('div.progress > div').css({
-        width:$innerDiv.outerWidth(),
-        height:$innerDiv.outerHeight()
-    });
-
-    Pusher.channel_auth_endpoint = 'http://jamesmdonnelly.com/WebRemoteNotifier/connector.php';
-    Pusher.channel_auth_transport = 'ajax';
-
+    /* Set up Pusher logging.
+     * ----
+     * This is Pusher's in-built logging function which we're modifying to allow us to
+     * display the log to the user upon authentication. logTimeFormat is used here to
+     * easily see when events were logged.
+     * We do this within document.ready as the front-facing log is dynamically added.
+     */
     Pusher.log = function(msg) {
         var date = new Date();
-        var time = '[' + ("0" + date.getHours()).slice(-2) + ":"
-                    + ("0" + date.getMinutes()).slice(-2) + ":"
-                    + ("0" + date.getSeconds()).slice(-2) + ']';
-        if(!$log.is(':visible'))
-            $log.slideDown(500);
-        $log.html('<span>' + time + '</span>' + msg + '<br>' + $log.html());
-        if(window.console && window.console.log) {
-            window.console.log(time + ' ' + msg);
-        }
+        var logTimeFormat = '[' + ("0" + date.getHours()).slice(-2) + ":"
+                                + ("0" + date.getMinutes()).slice(-2) + ":"
+                                + ("0" + date.getSeconds()).slice(-2) + ']';
+
+        if(window.console && window.console.log)
+            window.console.log(logTimeFormat + ' ' + msg);
     };
 
-    $('div#inner > form').on('click', 'input[type="submit"]', function(e) {
-        e.preventDefault();
+    /* Authentication form submissions.
+     * This function is triggered when the authentication form is submitted. Here we
+     * attempt to connect to a Pusher instance, much like a generic login form.
+     */
+    $auth_form.on('click', 'input[type="submit"]', function(event) {
+        // Prevent the submit button triggering the usual HTML form submit
+        event.preventDefault();
 
-        $('div.progress').fadeIn(500);
+        // Disable the form's inputs to prevent repetitive submissions and value changes
+        $auth_form.children('input').prop('disabled', true);
 
-        $('form#connectionForm > *').prop('disabled', true);
-        $('p#connectionMessage > span').text('Connecting...');
-        $('p#connectionMessage').removeClass('statusNeutral');
+        // Update the connection status to inform the user that a connection is happening
+        $status.updateStatus('Busy', 'Connecting...');
 
-        var pusher = new Pusher($('#txtAppKey').val());
+        // Create a new instance of Pusher based on the user's input App Key
+        var pusher = new Pusher($auth_appKey.val());
 
         var privateChannel = pusher.subscribe($('#txtChannel').val());
 
         privateChannel.bind('pusher:subscription_succeeded', function() {
             $('.progress').hide();
-            $('p#connectionMessage').addClass('statusOk');
-            $('p#connectionMessage > span').text('Connected!');
-            $('form').slideUp(500, function() {
-                $('div#devicesArea').slideDown(500);
-                $('div#main').stop().animate({width:'90%', height:'90%'}, 500);
-            });
-
-            privateChannel.bind('controller_authentication_ack', function(test) {
-                console.log(test);
-            });
-
-            privateChannel.bind('register_device', function(data) {
-                console.log(data);
-
-                if(!$deviceList.is(':visible'))
-                {
-                    $('#devicesLoadingMessage').slideUp(500);
-                    $('#devices').slideDown(500);
-                }
-
-                var row = $('<tr></tr>');
-                var name = $('<td></td>');
-                var tag = $('<td></td>');
-                var type = $('<td></td>');
-
-                name.text(data.deviceName);
-                tag.text(data.deviceTag);
-                type.text(data.deviceType);
-
-                row.append(name);
-                row.append(tag);
-                row.append(type);
-
-                $deviceList.children('tbody').append(row);
-            });
-
-            privateChannel.trigger('client-controller_authentication', {
-                    'authDeviceTag': $auth_deviceTag.val(),
-                    'authAppKey': $auth_appKey.val()
-                }
-            );
-
-            privateChannel.trigger('client-device_poll_new', {
-                'requestedDevice': 'all',
-                'requestedDeviceTag': $auth_deviceTag.val(),
-                'senderType': 'controller'
-            });
+            $status.updateStatus('Ok', 'Connected!');
+            $('#main').fadeOut(500);
         });
     })
 });
