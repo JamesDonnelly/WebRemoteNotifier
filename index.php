@@ -32,7 +32,7 @@
         <div id="outerWrapper">
             <div id="innerWrapper">
                 <div id="main">
-                    <section>
+                    <section id="authentication">
                         <h1 id="title">
                             Authentication
                             <small>| Remote Notifier</small>
@@ -65,8 +65,8 @@
                                 </fieldset>
                             </form>
                         </div>
-                        <p id="connectionMessage" class="statusNeutral">Status: <span>Not connected</span></p>
                     </section>
+                    <p id="connectionMessage" class="statusNeutral">Status: <span>Not connected</span></p>
                 </div>
             </div>
         </div>

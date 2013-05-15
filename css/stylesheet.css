@@ -1,3 +1,5 @@
+/* This is a rough draft. Needs to be modified to use media queries. */
+
 html, body {
     margin:0;
     height:100%;
@@ -8,32 +10,6 @@ body {
     background:#eee;
     font-family:Helvetica, Arial, sans-serif;
     font-size:16px;
-}
-
-#outerWrapper, #innerWrapper {
-    width:100%;
-    height:100%;
-}
-
-#outerWrapper {
-    display:table;
-}
-
-#innerWrapper {
-    display:table-cell;
-    vertical-align:middle;
-    overflow:hidden;
-}
-
-#main {
-    width:400px;
-    border:1px solid #ccc;
-    background:#fff;
-    margin:0 auto;
-    -moz-box-sizing:borer-box;
-    box-sizing:border-box;
-    position:relative;
-    min-height:120px;
 }
 
 ::-webkit-input-placeholder { /* WebKit browsers */
@@ -93,6 +69,54 @@ code {
     border:1px solid #eee;
     color:#5ae;
     padding:0 5px;
+}
+
+#outerWrapper, #innerWrapper {
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+
+#outerWrapper {
+    display:table;
+}
+
+#innerWrapper {
+    display:table-cell;
+    vertical-align:middle;
+}
+
+#main {
+    width:400px;
+    border:1px solid #ccc;
+    background:#fff;
+    margin:0 auto;
+    -moz-box-sizing:borer-box;
+    box-sizing:border-box;
+    position:relative;
+}
+
+#main.fullSize {
+    width:90%;
+    height:90%;
+}
+
+#main.loading {
+    background:transparent;
+    border:none;
+    text-align:center;
+}
+
+#main.loading span {
+    display:block;
+}
+
+#main.loading span#loadingMessage {
+    font-size:30px;
+}
+
+#main.loading span#loadingLog {
+    font-size:14px;
 }
 
 code#log {
@@ -184,8 +208,9 @@ p#connectionMessage {
     box-sizing:border-box;
 }
 
-p#connectionMessage.statusNeutral { background:#eee; }
 p#connectionMessage.statusBusy { background:#5ae; color:#fff; }
+p#connectionMessage.statusError { background: #ee6b69; color:#fff; }
+p#connectionMessage.statusNeutral { background:#eee; }
 p#connectionMessage.statusOk { background:#aea; }
 
 table#devices {
