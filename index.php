@@ -66,6 +66,16 @@
                             </form>
                         </div>
                     </section>
+                    <section id="devices">
+                        <div id="devices-sidebar">
+                            <ul id="devices-list">
+                                <li id="device-list-title">Devices</li>
+                            </ul>
+                        </div>
+                        <div id="devices-page-container">
+                            <div id="devices-page" style="display:none"></div>
+                        </div>
+                    </section>
                     <p id="connectionMessage" class="statusNeutral">Status: <span>Not connected</span></p>
                 </div>
             </div>

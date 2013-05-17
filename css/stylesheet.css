@@ -97,8 +97,9 @@ code {
 }
 
 #main.fullSize {
-    width:90%;
-    height:90%;
+    width:100%;
+    height:100%;
+    border:none;
 }
 
 #main.loading {
@@ -194,16 +195,15 @@ fieldset.submit > input[type="submit"] {
 }
 
 p#connectionMessage {
-    margin:0;
-    border-top:1px solid #bbb;
+    margin:0 0 0 -1px;
+    border:1px solid #bbb;
     background:#aee;
     color:#555;
     font-size:10px;
     padding:2px 5px;
     position:absolute;
-    bottom:0;
+    top:100%;
     left:0;
-    width:100%;
     -moz-box-sizing:border-box;
     box-sizing:border-box;
 }
@@ -213,20 +213,167 @@ p#connectionMessage.statusError { background: #ee6b69; color:#fff; }
 p#connectionMessage.statusNeutral { background:#eee; }
 p#connectionMessage.statusOk { background:#aea; }
 
-table#devices {
-    border-collapse:collapse;
-}
+/* Devices section
+ * ----
+ * This is the devices section, containing the devices 'page'
+ */
+    #devices {
+        display:none;
+        height:100%;
+    }
 
-table#devices > thead > tr {
-    background:#888;
-}
+/* Devices 'page'
+* ----
+* This is the main devices page area
+*/
+    #devices-page-container {
+        padding-left:200px;
+        height:100%;
+    }
 
-table#devices > thead > tr > th {
-    color:#fff;
-    border:1px solid transparent;
-    font-weight:normal;
-}
+    div#devices-page-container, div#devices-sidebar {
+        background: #dfdfdf; /* Old browsers */
+        background: -moz-linear-gradient(left, #dfdfdf 0%, #d5d5d5 50%, #dfdfdf 100%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, right top, color-stop(0%,#dfdfdf), color-stop(50%,#d5d5d5), color-stop(100%,#dfdfdf)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(left, #dfdfdf 0%,#d5d5d5 50%,#dfdfdf 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(left, #dfdfdf 0%,#d5d5d5 50%,#dfdfdf 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(left, #dfdfdf 0%,#d5d5d5 50%,#dfdfdf 100%); /* IE10+ */
+        background: linear-gradient(to right, #dfdfdf 0%,#d5d5d5 50%,#dfdfdf 100%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#dfdfdf',GradientType=1 ); /* IE6-9 */
+    }
 
-table#devices > tbody > tr > td {
-    border:1px solid #bbb;
-}
+    #devices-page {
+        background:#fff;
+        height:100%;
+    }
+
+    #devices-page-inner {
+        padding:10px;
+    }
+
+    #devices-page-inner > table {
+        border-collapse:collapse;
+        width:100%;
+    }
+
+    #devices-page-inner > table > tbody > tr:nth-child(odd) > td {
+        background:#f5f5f5;
+    }
+
+    #devices-page-inner > table th,
+    #devices-page-inner > table td {
+        padding:2px 5px;
+        border-width:1px;
+        border-style:solid;
+    }
+
+    #devices-page-inner > table th {
+        background:#333;
+        color:#fff;
+        font-weight:normal;
+        border-color:transparent;
+        text-align:left;
+    }
+
+    #devices-page-inner > table td {
+        border-color:#eee;
+    }
+
+/* Devices 'page' sidebar
+ * ----
+ * This is the sidebar on the devices page
+ */
+    div#devices-sidebar {
+        float:left;
+        width:200px;
+        height:100%;
+        -moz-box-sizing:border-box;
+        box-sizing:border-box;
+    }
+
+/* Devices list
+ * ----
+ * This is the list of device 'links' on the sidebar
+ */
+    ul#devices-list {
+        padding:0;
+        margin:0;
+        list-style-type:none;
+        position:relative;
+        background:transparent;
+        position:relative;
+        z-index:1;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -o-user-select: none;
+        user-select: none;
+    }
+
+    ul#devices-list > li {
+        display:block;
+        cursor:pointer;
+        padding:5px 10px;
+        background-color:#f5f5f5;
+        position:relative;
+        z-index:1;
+        box-sizing:border-box;
+    }
+
+    ul#devices-list > li.device {
+        background-image:url('../images/icon-lightbulb_off.png');
+        background-repeat:no-repeat;
+        background-position:95% 50%;
+        color:#444;
+        border-bottom: 1px solid #EEE;
+    }
+
+    ul#devices-list > li.device:hover {
+        background-color:#4C85B5;
+        border-bottom:1px solid #4C85B5;
+        color:#eee;
+    }
+
+    ul#devices-list > li.device.active {
+        background-image:url('../images/icon-lightbulb.png');
+        background-color:#18466B;
+        border-bottom-color:#18466B;
+        color:#EBF6FF;
+        cursor:default;
+        z-index:3;
+    }
+
+    ul#devices-list > li#device-list-title {
+        cursor:default;
+        font-size:16px;
+        color:#eee;
+        background:#082A46;
+        padding: 10px;
+        line-height: 28px;
+    }
+
+    ul#devices-list > li.device.active,
+    ul#devices-list > li#device-list-title {
+        margin-right:-1px;
+    }
+
+    ul#devices-list > li > h5 {
+        display:block;
+        padding-right:20px;
+        line-height:20px;
+        margin:0;
+    }
+
+    ul#devices-list > li > span {
+        font-size:12px;
+        line-height:16px;
+        vertical-align:middle;
+        margin-right:5px;
+    }
+
+    ul#devices-list > li > span[data-detailType="tag"] { }
+    ul#devices-list > li > span[data-detailType="type"] { }
+
+    div#devices-sidebar {
+        border-right:1px solid #bbb;
+    }

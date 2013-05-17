@@ -21,6 +21,13 @@ $(function() {
     };
 });
 
+/* Generate a GUID.
+ * http://stackoverflow.com/a/2117523/1317805
+ */
+function guid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);});
+}
+
 $(document).ready(function() {
     /* Declare scope variables.
      * ----
@@ -30,6 +37,8 @@ $(document).ready(function() {
         // Global variables
         channel,
         pusher,
+        selectedDevice,
+        devicesArray = [],
 
         // Global initiated variables
         animationSpeed = 500,
@@ -41,6 +50,12 @@ $(document).ready(function() {
             $auth_deviceTag = $('#txtDeviceTag'),
             $auth_form = $('#connectionForm'),
             $auth_section = $('#authentication'),
+
+            // Devices elements
+            $devices_page = $('#devices-page'),
+            $devices_section = $('#devices'),
+            $devices_sidebar = $('#devices-sidebar'),
+            $devices_list = $devices_sidebar.children('ul'),
 
             // Main interface elements
             $main = $('#main'),
@@ -97,6 +112,27 @@ $(document).ready(function() {
         // Trigger Pusher event binding
         handleEvents();
     });
+    /* Display main pane loading message
+     * ----
+     * This replaces the current $main content with a loading screen; used in connection
+     * with setPage_New when changing the main content to display a different pane.
+     */
+    $devices_list.on('click', 'li.device', function() {
+        var
+            $this = $(this),
+            $this_ref = $this.data('deviceRef')
+        ;
+
+        if($this.hasClass('active'))
+            return false;
+
+        // Remove the currently active device's active state
+        $('li.device.active').removeClass('active');
+
+        populateDevicesPage(devicesArray[$this_ref]);
+        $this.addClass('active');
+    });
+
 
     /* Display main pane loading message
      * ----
@@ -142,8 +178,8 @@ $(document).ready(function() {
                 $loading_section.hide();
                 // Re-display the status message
                 $status.show();
-                // Prepend the passed in contents to $main
-                $contents.prependTo($main);
+                // Ensure the contents are visible and prepend them to $main
+                $contents.show().prependTo($main);
                 // Process optional arguments
                 if(args)
                 {
@@ -166,6 +202,49 @@ $(document).ready(function() {
                 $main.fadeIn((animationSpeed/2));
             });
             $main.dequeue();
+        });
+    }
+
+    function populateDevicesPage(deviceArray) {
+        // Hide the current page
+        $devices_page.stop().slideUp(animationSpeed, function() {
+            // Check if the $devices_page has any current children
+            if($devices_page.children().length > 0)
+            {
+                // From this we assume the devices page has already been created
+                // Create the main devices page elements
+                $devices_page.children('h1').text(deviceArray.deviceName);
+            }
+            // If not, create page elements
+            else
+            {
+                // Create the main devices page elements
+                var
+                    $device_name = $('<h1/>').appendTo($devices_page),
+                    $device_inner_page = $('<div id="devices-page-inner"/>').appendTo($devices_page),
+                    $commands_table = $('<table/>').appendTo($device_inner_page),
+                    $commands_thead = $('<thead/>').appendTo($commands_table),
+                    $commands_tbody = $('<tbody/>').appendTo($commands_table),
+                    $commands_thead_row = $('<tr/>').appendTo($commands_thead)
+                ;
+
+                // Create the table headings
+                $('<th/>').text('Name').appendTo($commands_thead_row);
+                $('<th/>').text('Command').appendTo($commands_thead_row);
+
+                // Loop through each of the commands to populate the table
+                for(var i=0;i<deviceArray.commands.length;i++)
+                {
+                    var $command_tbody_row = $('<tr/>').appendTo($commands_tbody);
+                    $('<td/>').text(deviceArray.commands[i].name).appendTo($command_tbody_row);
+                    $('<td/>').text(deviceArray.commands[i].com).appendTo($command_tbody_row);
+                }
+
+                $device_name.text(deviceArray.deviceName);
+            }
+
+            // Show the newly populated page
+            $devices_page.stop().slideDown(animationSpeed);
         });
     }
 
@@ -196,13 +275,65 @@ $(document).ready(function() {
                     'senderType': 'controller'
                 }
             );
+            channel.trigger('client-device_poll_new',
+                {
+                    'requestedDevice': 'all',
+                    'requestedDeviceTag': $auth_deviceTag.val(),
+                    'senderType': 'controller'
+                }
+            );
+            channel.trigger('client-device_poll_new',
+                {
+                    'requestedDevice': 'all',
+                    'requestedDeviceTag': $auth_deviceTag.val(),
+                    'senderType': 'controller'
+                }
+            );
+
+            setPage_New($devices_section, 'fullSize');
         });
 
-        channel.bind('register_device', function(devices) {
-            $loading_log.text('Devices received, building interface...');
-            console.log(devices);
-            var $devices = $('<div/>').text('Test');
-            setPage_New($devices, 'fullSize');
+        /* Pusher register_device event handler
+         * ----
+         * This is fired whenever a device is registered. We use this to generate the
+         * device list and each individual device 'page'.
+         * todo: Update this to work with the new setPage_* functions
+         */
+        channel.bind('register_device', function(device) {
+            // { deviceName , deviceType , deviceTag , commands[ n{ com , name } ] }
+            var
+                // Pull device properties from device, ensuring that they exist
+                // todo: Make these globally accessible?
+                deviceCommands = device.commands = device.commands || [],
+                deviceName = device.deviceName = device.deviceName || 'Unnamed Device',
+                deviceTag = device.deviceTag = device.deviceTag || 'None',
+                deviceType = device.deviceType = device.deviceType || 'Unknown',
+
+                // Create a unique device reference
+                deviceRef = guid();
+
+                // Create new device list elements and populate list
+                $device_listItem = $('<li class="device"/>').data('deviceRef',deviceRef).hide(),
+                $device_name = $('<h5 class="deviceName" />').text(deviceName).appendTo($device_listItem),
+                $device_tag = $('<span class="deviceDetail" data-detailType="tag" />').text(deviceTag).appendTo($device_listItem),
+                $device_type = $('<span class="deviceDetail" data-detailType="type" />').text(deviceType).appendTo($device_listItem)
+            ;
+
+            // Add the device to the devicesArray
+            devicesArray[deviceRef] = device;
+
+            // Make this device the selected device if none are currently selected
+            if(typeof selectedDevice == 'undefined')
+            {
+                selectedDevice = deviceRef;
+                $device_listItem.addClass('active');
+
+                // Create the devices page content
+                populateDevicesPage(devicesArray[deviceRef]);
+            }
+
+            // Add the $device_listItem to the devices sidebar list
+            $device_listItem.appendTo($devices_list).slideDown(animationSpeed/2);
         });
 
         /* Pusher subscription_error event handler
