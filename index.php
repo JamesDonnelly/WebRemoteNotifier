@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <title>WebRemoteNotifier</title>
+        <link href='http://fonts.googleapis.com/css?family=Merriweather+Sans' rel='stylesheet' type='text/css'>
         <link type="text/css" rel="stylesheet" href="css/stylesheet.css">
         <script type="text/javascript">
             (function() {
@@ -72,8 +73,8 @@
                                 <li id="device-list-title">Devices</li>
                             </ul>
                         </div>
-                        <div id="devices-page-container">
-                            <div id="devices-page" style="display:none"></div>
+                        <div id="devices-commands-container" style="margin-left:-210px;">
+                            <div id="device-commands"></div>
                         </div>
                     </section>
                     <p id="connectionMessage" class="statusNeutral">Status: <span>Not connected</span></p>

@@ -3,12 +3,11 @@
 html, body {
     margin:0;
     height:100%;
-    position:relative;
 }
 
 body {
     background:#eee;
-    font-family:Helvetica, Arial, sans-serif;
+    font-family: 'Merriweather Sans', sans-serif;
     font-size:16px;
 }
 
@@ -223,16 +222,17 @@ p#connectionMessage.statusOk { background:#aea; }
         height:100%;
     }
 
-/* Devices 'page'
-* ----
-* This is the main devices page area
-*/
-    #devices-page-container {
-        padding-left:200px;
+/* Devices 'page' sidebar
+ * ----
+ * This is the sidebar on the devices page
+ */
+    div#devices-sidebar, div#devices-commands-container {
+        float:left;
+        width:200px;
         height:100%;
-    }
-
-    div#devices-page-container, div#devices-sidebar {
+        -moz-box-sizing:border-box;
+        box-sizing:border-box;
+        border-right:1px solid #bbb;
         background: #dfdfdf; /* Old browsers */
         background: -moz-linear-gradient(left, #dfdfdf 0%, #d5d5d5 50%, #dfdfdf 100%); /* FF3.6+ */
         background: -webkit-gradient(linear, left top, right top, color-stop(0%,#dfdfdf), color-stop(50%,#d5d5d5), color-stop(100%,#dfdfdf)); /* Chrome,Safari4+ */
@@ -243,60 +243,27 @@ p#connectionMessage.statusOk { background:#aea; }
         filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#dfdfdf',GradientType=1 ); /* IE6-9 */
     }
 
-    #devices-page {
-        background:#fff;
-        height:100%;
-    }
-
-    #devices-page-inner {
-        padding:10px;
-    }
-
-    #devices-page-inner > table {
-        border-collapse:collapse;
-        width:100%;
-    }
-
-    #devices-page-inner > table > tbody > tr:nth-child(odd) > td {
-        background:#f5f5f5;
-    }
-
-    #devices-page-inner > table th,
-    #devices-page-inner > table td {
-        padding:2px 5px;
-        border-width:1px;
-        border-style:solid;
-    }
-
-    #devices-page-inner > table th {
-        background:#333;
-        color:#fff;
-        font-weight:normal;
-        border-color:transparent;
-        text-align:left;
-    }
-
-    #devices-page-inner > table td {
-        border-color:#eee;
-    }
-
-/* Devices 'page' sidebar
- * ----
- * This is the sidebar on the devices page
- */
     div#devices-sidebar {
-        float:left;
-        width:200px;
-        height:100%;
-        -moz-box-sizing:border-box;
-        box-sizing:border-box;
+        z-index:3;
+        position:relative;
+        -webkit-box-shadow:5px 0px 10px 0px rgba(0, 0, 0, 0.75);
+        box-shadow:5px 0px 10px 0px rgba(0, 0, 0, 0.75);
     }
 
-/* Devices list
+    div#devices-commands-container {
+        border-left:2px solid #18466B;
+        overflow:hidden;
+    }
+
+    div#device-commands {
+        width:208px;
+    }
+
+/* Devices list and Commands List
  * ----
- * This is the list of device 'links' on the sidebar
+ * This is the list of device 'links' on the sidebar and accompanying commands list
  */
-    ul#devices-list {
+    ul#devices-list, ul#device-commands-list {
         padding:0;
         margin:0;
         list-style-type:none;
@@ -311,7 +278,7 @@ p#connectionMessage.statusOk { background:#aea; }
         user-select: none;
     }
 
-    ul#devices-list > li {
+    ul#devices-list > li, ul#device-commands-list > li {
         display:block;
         cursor:pointer;
         padding:5px 10px;
@@ -321,22 +288,28 @@ p#connectionMessage.statusOk { background:#aea; }
         box-sizing:border-box;
     }
 
-    ul#devices-list > li.device {
-        background-image:url('../images/icon-lightbulb_off.png');
-        background-repeat:no-repeat;
-        background-position:95% 50%;
+    ul#device-commands-list > li {
+        padding-left:18px;
+    }
+
+    ul#devices-list > li.device, ul#device-commands-list > li.command {
         color:#444;
         border-bottom: 1px solid #EEE;
     }
 
-    ul#devices-list > li.device:hover {
+    ul#devices-list > li.device {
+        background-image:url('../images/icon-lightbulb_off.png');
+        background-repeat:no-repeat;
+        background-position:95% 50%;
+    }
+
+    ul#devices-list > li.device:hover, ul#device-commands-list > li.command:hover {
         background-color:#4C85B5;
         border-bottom:1px solid #4C85B5;
         color:#eee;
     }
 
-    ul#devices-list > li.device.active {
-        background-image:url('../images/icon-lightbulb.png');
+    ul#devices-list > li.device.active, ul#device-commands-list > li.command.active {
         background-color:#18466B;
         border-bottom-color:#18466B;
         color:#EBF6FF;
@@ -344,17 +317,33 @@ p#connectionMessage.statusOk { background:#aea; }
         z-index:3;
     }
 
-    ul#devices-list > li#device-list-title {
+    ul#devices-list > li.device.active {
+        background-image:url('../images/icon-lightbulb.png');
+    }
+
+    ul#devices-list > li#device-list-title, ul#device-commands-list > li#device-commands-list-title {
         cursor:default;
         font-size:16px;
         color:#eee;
-        background:#082A46;
         padding: 10px;
         line-height: 28px;
     }
 
-    ul#devices-list > li.device.active,
     ul#devices-list > li#device-list-title {
+        background:#082A46;
+    }
+
+    ul#device-commands-list > li#device-commands-list-title {
+        background:#18466B;
+        padding-left:18px;
+    }
+
+    ul#devices-list > li.device:hover,
+    ul#devices-list > li.device.active,
+    ul#devices-list > li#device-list-title,
+    ul#device-commands-list > li.command:hover,
+    ul#device-commands-list > li.command.active,
+    ul#device-commands-list > li#device-commands-list-title {
         margin-right:-1px;
     }
 
@@ -374,7 +363,3 @@ p#connectionMessage.statusOk { background:#aea; }
 
     ul#devices-list > li > span[data-detailType="tag"] { }
     ul#devices-list > li > span[data-detailType="type"] { }
-
-    div#devices-sidebar {
-        border-right:1px solid #bbb;
-    }

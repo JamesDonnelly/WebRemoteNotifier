@@ -52,7 +52,8 @@ $(document).ready(function() {
             $auth_section = $('#authentication'),
 
             // Devices elements
-            $devices_page = $('#devices-page'),
+            $devices_commands_container = $('#devices-commands-container'),
+            $device_commands = $('#device-commands'),
             $devices_section = $('#devices'),
             $devices_sidebar = $('#devices-sidebar'),
             $devices_list = $devices_sidebar.children('ul'),
@@ -129,7 +130,7 @@ $(document).ready(function() {
         // Remove the currently active device's active state
         $('li.device.active').removeClass('active');
 
-        populateDevicesPage(devicesArray[$this_ref]);
+        populateDeviceCommandList(devicesArray[$this_ref]);
         $this.addClass('active');
     });
 
@@ -205,46 +206,64 @@ $(document).ready(function() {
         });
     }
 
-    function populateDevicesPage(deviceArray) {
+    function populateDeviceCommandList(deviceArray) {
         // Hide the current page
-        $devices_page.stop().slideUp(animationSpeed, function() {
-            // Check if the $devices_page has any current children
-            if($devices_page.children().length > 0)
+        $devices_commands_container.stop().animate({marginLeft:-210}, (animationSpeed/2), function() {
+            // Check if the $device_commands has any current children
+            if($device_commands.children().length > 0)
             {
                 // From this we assume the devices page has already been created
                 // Create the main devices page elements
-                $devices_page.children('h1').text(deviceArray.deviceName);
+                $device_commands.children('h1').text(deviceArray.deviceName);
             }
             // If not, create page elements
             else
             {
                 // Create the main devices page elements
                 var
-                    $device_name = $('<h1/>').appendTo($devices_page),
-                    $device_inner_page = $('<div id="devices-page-inner"/>').appendTo($devices_page),
-                    $commands_table = $('<table/>').appendTo($device_inner_page),
-                    $commands_thead = $('<thead/>').appendTo($commands_table),
-                    $commands_tbody = $('<tbody/>').appendTo($commands_table),
-                    $commands_thead_row = $('<tr/>').appendTo($commands_thead)
+                    $commands_list = $('<ul id="device-commands-list"/>').appendTo($device_commands)
                 ;
 
-                // Create the table headings
-                $('<th/>').text('Name').appendTo($commands_thead_row);
-                $('<th/>').text('Command').appendTo($commands_thead_row);
+                // Create the commands list heading
+                $('<li id="device-commands-list-title"/>').text('Commands').appendTo($commands_list);
 
                 // Loop through each of the commands to populate the table
                 for(var i=0;i<deviceArray.commands.length;i++)
                 {
-                    var $command_tbody_row = $('<tr/>').appendTo($commands_tbody);
-                    $('<td/>').text(deviceArray.commands[i].name).appendTo($command_tbody_row);
-                    $('<td/>').text(deviceArray.commands[i].com).appendTo($command_tbody_row);
+                    var
+                        command = deviceArray.commands[i]/*,
+                        command_html = command.com*/
+                    ;
+
+                    // Display the device command name
+                    $('<li class="command"/>').text(command.name).appendTo($commands_list);
+
+                    /*// If the device's command has no arguments, append ()
+                    if(typeof command.args == 'undefined')
+                        command_html += ' ()';
+                    // Otherwise, loop through each argument and add it to the command
+                    else
+                    {
+                        var args = command.args;
+                        command_html += ' ( ';
+                        for(var j=0;j<args.length;j++)
+                        {
+                            var arg = args[j];
+                            command_html += '<small>[' + arg.type + ']</small> ' + arg.name;
+                            command_html += (j + 1) < args.length ? ', ' : ' ';
+                        }
+                        command_html += ')';
+                    }
+
+                    // Display the device command
+                    $('<td/>').html(command_html).appendTo($command_tbody_row);*/
                 }
 
                 $device_name.text(deviceArray.deviceName);
             }
 
             // Show the newly populated page
-            $devices_page.stop().slideDown(animationSpeed);
+            $devices_commands_container.stop().animate({marginLeft:0}, animationSpeed);
         });
     }
 
@@ -300,6 +319,7 @@ $(document).ready(function() {
          * todo: Update this to work with the new setPage_* functions
          */
         channel.bind('register_device', function(device) {
+            console.log(device);
             // { deviceName , deviceType , deviceTag , commands[ n{ com , name } ] }
             var
                 // Pull device properties from device, ensuring that they exist
@@ -329,7 +349,7 @@ $(document).ready(function() {
                 $device_listItem.addClass('active');
 
                 // Create the devices page content
-                populateDevicesPage(devicesArray[deviceRef]);
+                populateDeviceCommandList(devicesArray[deviceRef]);
             }
 
             // Add the $device_listItem to the devices sidebar list
