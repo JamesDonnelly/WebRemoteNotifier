@@ -251,12 +251,11 @@ p#connectionMessage.statusOk { background:#aea; }
     }
 
     div#devices-commands-container {
-        border-left:2px solid #18466B;
         overflow:hidden;
     }
 
     div#device-commands {
-        width:208px;
+        width:200px;
     }
 
 /* Devices list and Commands List
