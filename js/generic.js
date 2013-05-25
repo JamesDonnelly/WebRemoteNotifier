@@ -65,11 +65,22 @@ $(document).ready(function() {
             $main = $('#main'),
             $status = $('#connectionMessage'),
 
+            // Initial loading section
+            $initial_loading_section = $('#initial-loading'),
+
         // Dynamic elements
         $loading_section = $('<section id="loading"/>'),
         $loading_message = $('<span id="loadingMessage"/>').text('Loading...').appendTo($loading_section),
         $loading_log = $('<span id="loadingLog"/>').insertAfter($loading_message)
     ;
+
+    // If we get here then everything has loaded; hide the loading pane and display auth.
+    $initial_loading_section.fadeOut(function() {
+        $main.removeClass('loading');
+        $auth_section.fadeIn(animationSpeed/2);
+        $status.fadeIn(animationSpeed/2);
+        $initial_loading_section.remove();
+    });
 
     /* Set up Pusher logging.
      * ----
@@ -263,12 +274,13 @@ $(document).ready(function() {
                     $command_listItem.text(command.name);
 
                     // If the device has args, add them as list items to the control list
-                    if(typeof command.args === 'object')
+                    if(command.args instanceof Object)
                     {
                         var
                             args = command.args
                         ;
-                        console.log(args);
+
+                        // Loop through each argument, adding it to the list
                         for(var j=0;j<args.length;j++)
                         {
                             var
@@ -402,7 +414,7 @@ $(document).ready(function() {
             devicesArray[deviceRef] = device;
 
             // Make this device the selected device if none are currently selected
-            if(typeof selectedDevice == 'undefined')
+            if(typeof selectedDevice === 'undefined')
             {
                 selectedDevice = deviceRef;
                 $device_listItem.addClass('active');

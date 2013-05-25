@@ -112,11 +112,13 @@ code {
     display:block;
 }
 
-#main.loading span#loadingMessage {
+#main.loading span#loadingMessage,
+#main.loading span#initial-loadingMessage {
     font-size:30px;
 }
 
-#main.loading span#loadingLog {
+#main.loading span#loadingLog,
+#main.loading span#initial-loadingLog {
     font-size:14px;
 }
 
@@ -215,6 +217,10 @@ p#connectionMessage.statusBusy { background:#5ae; color:#fff; }
 p#connectionMessage.statusError { background: #ee6b69; color:#fff; }
 p#connectionMessage.statusNeutral { background:#eee; }
 p#connectionMessage.statusOk { background:#aea; }
+
+#authentication, #connectionMessage {
+    display:none;
+}
 
 /* Devices section
  * ----

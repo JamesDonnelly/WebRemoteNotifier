@@ -32,7 +32,7 @@
     <body>
         <div id="outerWrapper">
             <div id="innerWrapper">
-                <div id="main">
+                <div id="main" class="loading">
                     <section id="authentication">
                         <h1 id="title">
                             Authentication
@@ -81,6 +81,7 @@
                             </div>
                         </div>
                     </section>
+                    <section id="initial-loading"><span id="initial-loadingMessage">Loading...</span><span id="initial-loadingLog">Requesting devices...</span></section>
                     <p id="connectionMessage" class="statusNeutral">Status: <span>Not connected</span></p>
                 </div>
             </div>
