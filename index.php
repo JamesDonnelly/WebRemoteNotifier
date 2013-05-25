@@ -74,7 +74,11 @@
                             </ul>
                         </div>
                         <div id="devices-commands-container" style="margin-left:-210px;">
-                            <div id="device-commands"></div>
+                            <div id="device-commands">
+                                <ul id="device-commands-list">
+                                    <li id="device-commands-list-title">Commands</li>
+                                </ul>
+                            </div>
                         </div>
                     </section>
                     <p id="connectionMessage" class="statusNeutral">Status: <span>Not connected</span></p>

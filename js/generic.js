@@ -53,10 +53,13 @@ $(document).ready(function() {
 
             // Devices elements
             $devices_commands_container = $('#devices-commands-container'),
-            $device_commands = $('#device-commands'),
             $devices_section = $('#devices'),
             $devices_sidebar = $('#devices-sidebar'),
             $devices_list = $devices_sidebar.children('ul'),
+
+            // Device commands elements
+            $device_commands = $('#device-commands'),
+            $commands_list = $device_commands.children('ul'),
 
             // Main interface elements
             $main = $('#main'),
@@ -113,25 +116,54 @@ $(document).ready(function() {
         // Trigger Pusher event binding
         handleEvents();
     });
-    /* Display main pane loading message
+
+    /* Handle device list item click
      * ----
-     * This replaces the current $main content with a loading screen; used in connection
-     * with setPage_New when changing the main content to display a different pane.
+     * When a device is clicked in the devices list we need to display its commands.
      */
     $devices_list.on('click', 'li.device', function() {
         var
             $this = $(this),
-            $this_ref = $this.data('deviceRef')
+            $currentlyActiveDevice = $('li.device.active'),
+            $currentlyActiveCommand = $('li.command.active'),
+            deviceReference = $this.data('deviceRef')
         ;
 
         if($this.hasClass('active'))
             return false;
 
         // Remove the currently active device's active state
-        $('li.device.active').removeClass('active');
+        $currentlyActiveDevice.removeClass('active');
 
-        populateDeviceCommandList(devicesArray[$this_ref]);
-        $this.addClass('active');
+        // Remove the currently active command's active state and command list
+        $currentlyActiveCommand.removeClass('active');
+        $currentlyActiveCommand.children('ul').stop().fadeOut(animationSpeed/2);
+
+        populateDeviceCommandList(devicesArray[deviceReference]);
+        return $this.addClass('active');
+    });
+
+    /* Display main pane loading message
+     * ----
+     * This replaces the current $main content with a loading screen; used in connection
+     * with setPage_New when changing the main content to display a different pane.
+     */
+    $commands_list.on('click', 'li.command', function() {
+        var
+            $this = $(this),
+            $currentlyActive = $('li.command.active'),
+            deviceReference = selectedDevice
+        ;
+
+        if($this.hasClass('active'))
+            return false;
+
+        // Remove the currently active command's active state
+        $currentlyActive.removeClass('active');
+        $currentlyActive.children('ul').stop().fadeOut(animationSpeed/2);
+
+        $this.children('ul').stop().fadeIn(animationSpeed);
+        return $this.addClass('active');
     });
 
 
@@ -209,57 +241,84 @@ $(document).ready(function() {
     function populateDeviceCommandList(deviceArray) {
         // Hide the current page
         $devices_commands_container.stop().animate({marginLeft:-210}, (animationSpeed/2), function() {
-            // Check if the $device_commands has any current children
-            if($device_commands.children().length > 0)
+            // Check if the $commands_list has more than 1 list item
+            if($commands_list.children('li').length > 1)
             {
-                // From this we assume the devices page has already been created
-                // Create the main devices page elements
-                $device_commands.children('h1').text(deviceArray.deviceName);
+                // Remove the currently active device's active state
+                $('li.command.active').removeClass('active');
             }
             // If not, create page elements
             else
             {
-                // Create the main devices page elements
-                var
-                    $commands_list = $('<ul id="device-commands-list"/>').appendTo($device_commands)
-                ;
-
-                // Create the commands list heading
-                $('<li id="device-commands-list-title"/>').text('Commands').appendTo($commands_list);
-
                 // Loop through each of the commands to populate the table
                 for(var i=0;i<deviceArray.commands.length;i++)
                 {
                     var
-                        command = deviceArray.commands[i]/*,
-                        command_html = command.com*/
+                        command = deviceArray.commands[i],
+                        $command_listItem = $('<li/>',{class:"command"}),
+                        $command_controlsList = $('<ul/>',{class:"controls-list"})
                     ;
 
-                    // Display the device command name
-                    $('<li class="command"/>').text(command.name).appendTo($commands_list);
+                    // Set the device command name
+                    $command_listItem.text(command.name);
 
-                    /*// If the device's command has no arguments, append ()
-                    if(typeof command.args == 'undefined')
-                        command_html += ' ()';
-                    // Otherwise, loop through each argument and add it to the command
-                    else
+                    // If the device has args, add them as list items to the control list
+                    if(typeof command.args === 'object')
                     {
-                        var args = command.args;
-                        command_html += ' ( ';
+                        var
+                            args = command.args
+                        ;
+                        console.log(args);
                         for(var j=0;j<args.length;j++)
                         {
-                            var arg = args[j];
-                            command_html += '<small>[' + arg.type + ']</small> ' + arg.name;
-                            command_html += (j + 1) < args.length ? ', ' : ' ';
+                            var
+                                arg = args[j],
+                                $command_controlsListItem = $('<li/>'),
+                                $control,
+                                $label = $('<label/>')
+                            ;
+
+                            // Determine what the control should be
+                            switch(arg.type) {
+                                case 'Boolean':
+                                    $control = $('<input/>',{type:"checkbox"});
+                                    break;
+                                case 'String':
+                                    $control = $('<input/>',{type:"text"});
+                                    break;
+                                case 'Time':
+                                    $control = $('<input/>',{type:"time"});
+                                    break;
+                                default:
+                                    $control = $('<input/>',{type: "text"});
+                                    console.warn('Unhandled argument type:', arg.type);
+                                    break;
+                            }
+
+                            // Set the label text
+                            $('<span/>').text(arg.name).appendTo($label);
+
+                            // Append the control to the label
+                            $control.appendTo($label);
+                            // Append the label to the controls list item
+                            $label.appendTo($command_controlsListItem);
+                            // Append the controls list item to the controls list
+                            $command_controlsListItem.appendTo($command_controlsList);
                         }
-                        command_html += ')';
                     }
 
-                    // Display the device command
-                    $('<td/>').html(command_html).appendTo($command_tbody_row);*/
-                }
+                    // Create the Run trigger
+                    var $command_runCommandListItem = $('<li/>');
+                    $('<a/>',{href:"#"}).text('Run').appendTo($command_runCommandListItem);
 
-                $device_name.text(deviceArray.deviceName);
+                    // Append trigger to list
+                    $command_runCommandListItem.appendTo($command_controlsList);
+
+                    // Append the controls list to the command list item
+                    $command_controlsList.appendTo($command_listItem);
+                    // Append the command list item to the commands list
+                    $command_listItem.appendTo($commands_list);
+                }
             }
 
             // Show the newly populated page

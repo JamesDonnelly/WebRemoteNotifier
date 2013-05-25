@@ -180,6 +180,9 @@ label > input[type="text"] {
     width:100%;
     font-size:16px;
     font-weight:normal;
+}
+
+#authentication input[type="text"] {
     border:none;
     background:#333;
     color:#fff;
@@ -250,10 +253,6 @@ p#connectionMessage.statusOk { background:#aea; }
         box-shadow:5px 0px 10px 0px rgba(0, 0, 0, 0.75);
     }
 
-    div#devices-commands-container {
-        overflow:hidden;
-    }
-
     div#device-commands {
         width:200px;
     }
@@ -302,22 +301,34 @@ p#connectionMessage.statusOk { background:#aea; }
         background-position:95% 50%;
     }
 
-    ul#devices-list > li.device:hover, ul#device-commands-list > li.command:hover {
+    ul#devices-list > li.device:hover {
         background-color:#4C85B5;
         border-bottom:1px solid #4C85B5;
         color:#eee;
     }
 
+    ul#device-commands-list > li.command:hover {
+      background-color:#94BADA;
+      border-bottom:1px solid #94BADA;
+      color:#fff;
+  }
+
     ul#devices-list > li.device.active, ul#device-commands-list > li.command.active {
-        background-color:#18466B;
-        border-bottom-color:#18466B;
-        color:#EBF6FF;
         cursor:default;
         z-index:3;
     }
 
     ul#devices-list > li.device.active {
+        background-color:#18466B;
+        border-bottom-color:#18466B;
+        color:#EBF6FF;
         background-image:url('../images/icon-lightbulb.png');
+    }
+
+    ul#device-commands-list > li.command.active {
+        background-color:#4C85B5;
+        border-bottom-color:#4C85B5;
+        color:#EBF6FF;
     }
 
     ul#devices-list > li#device-list-title, ul#device-commands-list > li#device-commands-list-title {
@@ -344,6 +355,37 @@ p#connectionMessage.statusOk { background:#aea; }
     ul#device-commands-list > li.command.active,
     ul#device-commands-list > li#device-commands-list-title {
         margin-right:-1px;
+    }
+
+    ul#device-commands-list > li.command > ul {
+        list-style-type:none;
+        padding:0;
+        display:none;
+        position:absolute;
+        top:0;
+        left:100%;
+        background:#fff;
+        border:1px solid #bbb;
+    }
+
+    ul#device-commands-list > li.command > ul.controls-list > li {
+        display:table-cell;
+        padding:1px 5px 1px 10px;
+    }
+
+    ul#device-commands-list > li.command > ul.controls-list > li > label {
+        display:table;
+        height:30px;
+        line-height:30px;
+        margin:0;
+        padding:0;
+    }
+
+    ul#device-commands-list > li.command > ul.controls-list > li > label > * {
+        display:table-cell;
+        padding:2px 0;
+        margin:0 5px;
+        vertical-align:middle;
     }
 
     ul#devices-list > li > h5 {
